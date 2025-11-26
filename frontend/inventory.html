@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - InventoryPro</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar Navigation (mismo estructura) -->
+        <div class="bg-dark border-end" id="sidebar-wrapper">
+            <div class="sidebar-heading bg-primary text-white p-3">
+                <i class="fas fa-boxes-stacked me-2"></i>InventoryPro
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="dashboard.html" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-chart-line me-2"></i>Dashboard
+                </a>
+                <a href="products.html" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-box me-2"></i>Productos
+                </a>
+                <a href="inventory.html" class="list-group-item list-group-item-action bg-dark text-white active">
+                    <i class="fas fa-warehouse me-2"></i>Inventario
+                </a>
+                <a href="reports.html" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-file-alt me-2"></i>Reportes
+                </a>
+                <a href="users.html" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-users me-2"></i>Usuarios
+                </a>
+                <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-cog me-2"></i>Configuración
+                </a>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper" class="w-100">
+            <!-- Top Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+                <div class="container-fluid">
+                    <button class="btn btn-primary" id="sidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+
+                    <div class="d-flex ms-auto align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-light dropdown-toggle" type="button" 
+                                    data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-2"></i>Admin
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="fas fa-user me-2"></i>Perfil
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="index.html">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <div class="container-fluid p-4">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Inventario</li>
+                    </ol>
+                </nav>
+
+                <!-- Header with Action Buttons -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Control de Inventario</h2>
+                    <div>
+                        <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#entryModal">
+                            <i class="fas fa-arrow-down me-2"></i>Entrada
+                        </button>
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exitModal">
+                            <i class="fas fa-arrow-up me-2"></i>Salida
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <ul class="nav nav-tabs mb-4" id="inventoryTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="movements-tab" data-bs-toggle="tab" 
+                                data-bs-target="#movements" type="button">
+                            <i class="fas fa-exchange-alt me-2"></i>Movimientos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="current-tab" data-bs-toggle="tab" 
+                                data-bs-target="#current" type="button">
+                            <i class="fas fa-boxes me-2"></i>Stock Actual
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="inventoryTabContent">
+                    <!-- Movements Tab -->
+                    <div class="tab-pane fade show active" id="movements">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Tipo</th>
+                                                <th>Producto</th>
+                                                <th>Cantidad</th>
+                                                <th>Usuario</th>
+                                                <th>Motivo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="movementsTableBody">
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Stock Tab -->
+                    <div class="tab-pane fade" id="current">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Producto</th>
+                                                <th>Categoría</th>
+                                                <th>Stock Actual</th>
+                                                <th>Stock Mínimo</th>
+                                                <th>Estado</th>
+                                                <th>Valor Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="currentStockTableBody">
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Entry Modal -->
+    <div class="modal fade" id="entryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-arrow-down me-2"></i>Entrada de Mercancía
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="entryForm">
+                        <div class="mb-3">
+                            <label for="entryProduct" class="form-label">Producto *</label>
+                            <select class="form-select" id="entryProduct" required>
+                                <option value="">Seleccionar producto...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="entryQuantity" class="form-label">Cantidad *</label>
+                            <input type="number" class="form-control" id="entryQuantity" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="entryReason" class="form-label">Motivo *</label>
+                            <select class="form-select" id="entryReason" required>
+                                <option value="compra">Compra</option>
+                                <option value="devolucion">Devolución</option>
+                                <option value="ajuste">Ajuste de inventario</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="entryNotes" class="form-label">Notas</label>
+                            <textarea class="form-control" id="entryNotes" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="entryForm" class="btn btn-success">
+                        <i class="fas fa-check me-2"></i>Registrar Entrada
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exit Modal -->
+    <div class="modal fade" id="exitModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-arrow-up me-2"></i>Salida de Mercancía
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="exitForm">
+                        <div class="mb-3">
+                            <label for="exitProduct" class="form-label">Producto *</label>
+                            <select class="form-select" id="exitProduct" required>
+                                <option value="">Seleccionar producto...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exitQuantity" class="form-label">Cantidad *</label>
+                            <input type="number" class="form-control" id="exitQuantity" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exitReason" class="form-label">Motivo *</label>
+                            <select class="form-select" id="exitReason" required>
+                                <option value="venta">Venta</option>
+                                <option value="merma">Merma</option>
+                                <option value="ajuste">Ajuste de inventario</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exitNotes" class="form-label">Notas</label>
+                            <textarea class="form-control" id="exitNotes" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="exitForm" class="btn btn-danger">
+                        <i class="fas fa-check me-2"></i>Registrar Salida
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="assets/js/sidebar.js"></script>
+    <script src="assets/js/inventory.js"></script>
+</body>
+</html>
