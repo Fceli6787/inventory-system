@@ -24,8 +24,8 @@ Sistema completo de gestión de inventario desarrollado con PHP nativo y arquite
 
 ### Frontend
 - HTML5, CSS3, JavaScript (ES6+)
-- Bootstrap 5 / Tailwind CSS (CDN)
-- Alpine.js / Vanilla JS
+- Bootstrap 5
+- Vanilla JS
 - Chart.js para visualización de datos
 - Fetch API para comunicación con backend
 
@@ -33,21 +33,60 @@ Sistema completo de gestión de inventario desarrollado con PHP nativo y arquite
 
 ```
 inventory-system/
-├── backend/              # API PHP
-│   ├── app/
-│   │   ├── Controllers/
-│   │   ├── Models/
-│   │   ├── Middleware/
-│   │   └── Services/
-│   ├── config/
-│   ├── core/
-│   └── public/
-├── frontend/            # Interfaz de usuario
-│   ├── assets/
-│   ├── pages/
-│   └── components/
-├── docs/
-└── README.md
+├── LICENSE
+├── README.md
+├── inventorypro.sql
+├── .gitignore
+├── backend/
+│   └── app/
+│       ├── Controllers/
+│       │   ├── AuthController.php
+│       │   ├── DashboardController.php
+│       │   ├── InventoryController.php
+│       │   ├── ProductController.php
+│       │   ├── ReportController.php
+│       │   └── UserController.php
+│       ├── Models/
+│       │   ├── Category.php
+│       │   ├── InventoryMovement.php
+│       │   ├── Product.php
+│       │   └── User.php
+│       ├── Middleware/
+│       │   └── AuthMiddleware.php
+│       ├── Services/
+│       │   ├── ExcelGenerator.php
+│       │   └── PdfGenerator.php
+│       ├── core/
+│       │   ├── Database.php
+│       │   ├── Router.php
+│       │   ├── Request.php
+│       │   └── Response.php
+│       ├── config/
+│       │   └── database.php
+│       └── public/
+│           └── index.php
+└── frontend/
+    ├── index.html
+    ├── dashboard.html
+    ├── inventory.html
+    ├── products.html
+    ├── reports.html
+    ├── users.html
+    └── assets/
+        ├── css/
+        │   └── style.css
+        ├── js/
+        │   ├── auth.js
+        │   ├── config.js
+        │   ├── dashboard.js
+        │   ├── inventory.js
+        │   ├── login.js
+        │   ├── products.js
+        │   ├── reports.js
+        │   ├── sidebar.js
+        │   └── users.js
+        └── img/
+            └── products/
 ```
 
 ## 🚀 Instalación
@@ -56,36 +95,47 @@ inventory-system/
 - PHP 8.0 o superior
 - MySQL 5.7+ / MariaDB 10.3+
 - Servidor web (Apache/Nginx)
-- Composer (opcional)
+- Composer (para dependencias de reportes)
 
 ### Pasos de instalación
 
 1. **Clonar el repositorio**
-```
+```bash
 git clone https://github.com/fceli6787/inventory-system.git
 cd inventory-system
 ```
 
-2. **Configurar base de datos**
+2. **Instalar dependencias PHP (para reportes)**
+```bash
+composer require dompdf/dompdf phpoffice/phpspreadsheet
 ```
+
+3. **Configurar base de datos**
+```bash
 # Importar el esquema de base de datos
-mysql -u root -p < database/schema.sql
+mysql -u root -p < inventorypro.sql
 ```
 
-3. **Configurar archivo de conexión**
-```
-# Editar backend/config/database.php con tus credenciales
-cp backend/config/database.example.php backend/config/database.php
+4. **Configurar archivo de conexión**
+```bash
+# Editar backend/app/config/database.php con tus credenciales
+cp backend/app/config/database.example.php backend/app/config/database.php
 ```
 
-4. **Configurar servidor web**
-- Apuntar el DocumentRoot a `backend/public/` para la API
-- Configurar virtual host para el frontend
-
-5. **Iniciar el servidor**
+5. **Configurar permisos para reportes**
+```bash
+mkdir -p frontend/assets/reports
+chmod -R 775 frontend/assets/reports
 ```
+
+6. **Configurar servidor web**
+- Apuntar el DocumentRoot a `backend/app/public/` para la API
+- Configurar un alias o virtual host para el frontend
+
+7. **Iniciar el servidor**
+```bash
 # Opción 1: Servidor incorporado de PHP
-php -S localhost:8000 -t backend/public/
+php -S localhost:8000 -t backend/app/public/
 
 # Opción 2: XAMPP/WAMP/LAMP
 # Colocar proyecto en htdocs/www
@@ -105,19 +155,58 @@ Contraseña: admin123
 
 ### Endpoints principales de la API
 
+**Autenticación**
 ```
-GET    /api/products           # Listar todos los productos
-POST   /api/products           # Crear nuevo producto
-GET    /api/products/{id}      # Obtener producto específico
-PUT    /api/products/{id}      # Actualizar producto
-DELETE /api/products/{id}      # Eliminar producto
+POST   /api/auth/login           # Iniciar sesión
+POST   /api/auth/logout          # Cerrar sesión
+GET    /api/auth/check           # Verificar estado de autenticación
+```
 
-GET    /api/inventory          # Estado del inventario
-POST   /api/inventory/entry    # Registrar entrada de mercancía
-POST   /api/inventory/exit     # Registrar salida de mercancía
+**Productos**
+```
+GET    /api/products             # Listar todos los productos
+GET    /api/products/{id}        # Obtener producto específico
+POST   /api/products             # Crear nuevo producto
+PUT    /api/products/{id}        # Actualizar producto
+DELETE /api/products/{id}        # Eliminar producto
+GET    /api/products/categories  # Listar categorías
+GET    /api/products/units       # Listar unidades de medida
+GET    /api/products/low-stock   # Productos con stock bajo
+```
 
-GET    /api/reports/dashboard  # Datos para dashboard
-GET    /api/reports/low-stock  # Productos con stock bajo
+**Inventario**
+```
+GET    /api/inventory            # Estado actual del inventario
+POST   /api/inventory/entry      # Registrar entrada de mercancía
+POST   /api/inventory/exit       # Registrar salida de mercancía
+GET    /api/inventory/movements  # Histórico de movimientos
+```
+
+**Dashboard**
+```
+GET    /api/dashboard/stats              # Estadísticas resumen
+GET    /api/dashboard/inventory-chart    # Datos para gráfico de inventario
+GET    /api/dashboard/categories-chart   # Datos para gráfico de categorías
+GET    /api/dashboard/recent-activity    # Actividad reciente
+GET    /api/dashboard/low-stock          # Alertas de stock bajo
+```
+
+**Reportes**
+```
+POST   /api/reports/generate     # Generar reporte personalizado
+GET    /api/reports/analytics    # Obtener datos analíticos
+```
+
+**Usuarios**
+```
+GET    /api/users                # Listar todos los usuarios
+GET    /api/users/{id}           # Obtener usuario específico
+POST   /api/users                # Crear nuevo usuario
+PUT    /api/users/{id}           # Actualizar usuario
+DELETE /api/users/{id}           # Eliminar usuario
+GET    /api/users/roles          # Listar roles disponibles
+GET    /api/users/profile        # Obtener perfil del usuario actual
+PUT    /api/users/profile        # Actualizar perfil del usuario
 ```
 
 ## 🎯 Roadmap
@@ -125,7 +214,9 @@ GET    /api/reports/low-stock  # Productos con stock bajo
 - [x] Arquitectura base MVC
 - [x] CRUD de productos
 - [x] Sistema de autenticación
-- [ ] Implementar reportes PDF
+- [x] Control de inventario
+- [x] Dashboard analítico
+- [x] Reportes en PDF y Excel
 - [ ] Módulo de proveedores
 - [ ] Integración con código de barras
 - [ ] API mobile
@@ -133,22 +224,13 @@ GET    /api/reports/low-stock  # Productos con stock bajo
 ## 👤 Autor
 
 **Andres Felipe Celi Jimenez**
-- GitHub: fceli6787(https://github.com/fceli6787)
-- LinkedIn: www.linkedin.com/in/andres-felipe-celi-jimenez-a12a191a7
+- GitHub: [fceli6787](https://github.com/fceli6787)
+- LinkedIn: [www.linkedin.com/in/andres-felipe-celi-jimenez-a12a191a7](https://www.linkedin.com/in/andres-felipe-celi-jimenez-a12a191a7)
 - Email: fceli6787@gmail.com
 
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
-
-## 🤝 Contribuciones
-
-Las contribuciones son bienvenidas. Por favor:
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add: nueva característica'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
 
 ## 🙏 Agradecimientos
 
@@ -157,4 +239,3 @@ Proyecto desarrollado como parte de mi portafolio profesional para demostrar hab
 - Desarrollo Full-Stack con PHP nativo
 - Diseño de APIs RESTful
 - Patrones de diseño MVC
-```
