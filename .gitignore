@@ -22,11 +22,6 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 
-# Database
-*.sql
-*.sqlite
-*.db
-
 # Uploads
 uploads/*
 !uploads/.gitkeep
